@@ -31,14 +31,18 @@ all_job=[]
 def extract(datas):
     exdta=[]
     for data in datas:    
-        #print(data)   
-        
+        print(data)
+        data=data.encode('latin1', errors='ignore').decode('utf-8', errors='ignore')
+        print(data)
+        break
         data=json.loads(data)
         #print(data)      
         title=data['520084652'][0]
         company_name=data['520084652'][1]
         loaction=data['520084652'][2]
-        job_des = data['520084652'][19]
+        if data['520084652'][19]:
+            job_des = data['520084652'][19]#.replace("â¢",".")
+            print(type(job_des))
         apply_link=[]
         for i in range(len(data['520084652'][3])):
             link_name=data['520084652'][3][i][2]
@@ -52,7 +56,7 @@ def extract(datas):
         post=data['520084652'][12]
         if data['520084652'][23]:
             Wmode=data['520084652'][23]
-            Wmode=Wmode.encode('latin1').decode('utf-8')
+            #Wmode=Wmode#.encode('latin1').decode('utf-8')
         Clogo=data['520084652'][17]
         #print(title,company_name,loaction,job_des,apply_link,id,post)
         #print(apply_link)
@@ -87,6 +91,7 @@ while nextid:
     #jobs.extend(page_job)
     if re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',res):
         nextid=re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',res)
+        pass
     else:
         nextid=''
     #print(page_job)

@@ -13,9 +13,10 @@ db=pymysql.connect(host='localhost',user='root',password='@ggreg@te',database='T
 cursor=db.cursor()
 print("db connected")
 
+job_search="job in coimbatore"
 headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
 response = requests.get(
-    'https://www.google.com/search?q=jobs%20in%20coimbatore&oq=jobs%20in%20coimbatore&gs_lcrp=EgZjaHJvbWUqDAgAEEUYOxixAxiABDIMCAAQRRg7GLEDGIAEMgcIARAAGIAEMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgcIBRAAGIAEMgcIBhAAGIAEMgcIBxAAGIAEMgcICBAAGIAEMgcICRAAGIAEqAIAsAIA&sourceid=chrome&ie=UTF-8&jbr=sep:0&udm=8&ved=2ahUKEwjdoLym2daMAxUUyDgGHfKrM3QQ3L8LegQIKBAO',
+    'https://www.google.com/search?q='+job_search+'&oq='+job_search+'&gs_lcrp=EgZjaHJvbWUqDAgAEEUYOxixAxiABDIMCAAQRRg7GLEDGIAEMgcIARAAGIAEMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgcIBRAAGIAEMgcIBhAAGIAEMgcIBxAAGIAEMgcICBAAGIAEMgcICRAAGIAEqAIAsAIA&sourceid=chrome&ie=UTF-8&jbr=sep:0&udm=8&ved=2ahUKEwjdoLym2daMAxUUyDgGHfKrM3QQ3L8LegQIKBAO',
     
     headers=headers,
 )
@@ -31,10 +32,9 @@ all_job=[]
 def extract(datas):
     exdta=[]
     for data in datas:    
-        print(data)
+        #print(data)
         data=data.encode('latin1', errors='ignore').decode('utf-8', errors='ignore')
-        print(data)
-        break
+        #print(data)
         data=json.loads(data)
         #print(data)      
         title=data['520084652'][0]
@@ -42,7 +42,7 @@ def extract(datas):
         loaction=data['520084652'][2]
         if data['520084652'][19]:
             job_des = data['520084652'][19]#.replace("â¢",".")
-            print(type(job_des))
+            #print(type(job_des))
         apply_link=[]
         for i in range(len(data['520084652'][3])):
             link_name=data['520084652'][3][i][2]
@@ -75,7 +75,7 @@ nextid=re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',soup)
 page=1
 while nextid:
     #print(datetime.datetime.now())
-    #time.sleep(20)
+    time.sleep(20)
     #print(datetime.datetime.now())
     nextid=nextid[0]
     next_url=f'https://www.google.com/async/callback:550?fc={nextid}&fcv=3&vet=12ahUKEwiZ69Wjn9mMAxWjd2wGHUQvHMAQw40IegQIJBAO..i&ei=X-b9Z9m_GaPvseMPxN7wgAw&opi=89978449&sca_esv=a5672ed9c1a134ac&udm=8&yv=3&cs=0&async=_basejs:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fam%3DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAAUBIAAAAAAAAAAgAAQAAAAAAACAAQAAAAAAAAkIAAFBAgAAAAAIAAAAAAAAEwCAgGAFAKAAAAAAAAAAAAAAEAAAAAAQEAHwvn8wAAAAAAAAAAAAAAAAAAAEQAIAAAAAAAAAuAAAEAAHABCyCxAAAAAAAAAAAAQAAAAAAAAIAAAAAABAAAAAAAUAAAAAAAAAABAAAAAAAAAACAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAACAAgAYAAAoAIIAfAAAAAAAABwAAAKAAAAAAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fdg%3D0%2Fbr%3D1%2Frs%3DACT90oEJRBK8Jld4KzC7cG12n5RtfwNYWw,_basecss:%2Fxjs%2F_%2Fss%2Fk%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGAMEAEABGYKAAAAgOAEAGQHAAAAAD4AADgVABAAAAAAAAFAAgAAAAAAAAgA0BMAEhAAABAFAAAAAAQIQhgAIAAAGwAAkAgAAEEAAIAgYAAAGQAAAAAgAABOBQDEAQAQAAAGAgCOgAAgAQAAABAKC4AAAACUIAAAAAAAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAACIAIBAAAAAIABACAGIAgAIAQIAAwAMAAvABAAAgASIAADTAAAQIAAoBAAGAHwAgAAAAIAEAABAAgCIAOMYoAAIAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAQ%2Fbr%3D1%2Frs%3DACT90oGkyCX8g6nBXeIixUwdgWWyVEDqhg,_basecomb:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fck%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGBMEAUBJGYKAAAAgOAkAGQHAAAAAD6AATgVABAAAAkIAAFBAgAAAAAIAAgA0BMAExCAgHAFAKAAAAQIQhgAIAAAGwAAkAgQEEHwvv8wYAAAGQAAAAAgAABOBQDEQQIQAAAGAgCOuAAgEQAHABC6C5AAAACUIAAAAAQAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAADIAIBAAAAAICBACAGIAgEIAQIAAwAMAAvABAAAgASIAADTAgAYIAAoBIIGfHwAgAAAAJwEAALAAgCIAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fd%3D1%2Fed%3D1%2Fdg%3D0%2Fbr%3D1%2Fujg%3D1%2Frs%3DACT90oGLK-4mHY6SD0g-PDy8Qw8STM-Kyw,_fmt:prog,_id:fc_X-b9Z9m_GaPvseMPxN7wgAw_2'
@@ -97,8 +97,8 @@ while nextid:
     #print(page_job)
     #print(nextid)
     page+=1
-    if page==3:
-    #if nextid=='':
+    #if page==3:
+    if nextid=='':
         print('all page extrac')
         break
         

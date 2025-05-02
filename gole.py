@@ -5,7 +5,7 @@ import re
 import json
 import pandas as pd
 import time
-import datetime
+from  datetime import datetime, timedelta
 import pymysql
 import html as parser1
 
@@ -25,11 +25,11 @@ print(response.status_code)
 #response.encoding = ''
 #soup=response.text
 #soup=parser1.unescape(response.content.decode('utf-8'))
-soup=response.content.decode('utf-8')
+soup=response.text#decode('utf-8')
 #open("gott.html","w").write(soup)
 
-def insert(title,company_name,loaction,job_des,apply_link,jid,post,Wmode,Clogo):
-    cursor.execute("insert into job1 (title,cname,location,job_desc,link,Workmode,job_id,posted,logo) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)",(title,company_name,loaction,job_des,apply_link,Wmode,jid,post,Clogo))
+def insert(title,company_name,loaction,job_des,apply_link,jid,post,Wmode,Clogo,datepost):
+    cursor.execute("insert into job1 (title,cname,location,job_desc,link,Workmode,job_id,posted,logo,postdate) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(title,company_name,loaction,job_des,apply_link,Wmode,jid,post,Clogo,datepost))
     #print(f'{title} inserted')
     db.commit()
 #print(soup)
@@ -37,23 +37,22 @@ all_job=[]
 def extract(datas):
     exdta=[]
     for data in datas:
-        print(data)  
-        # if  '\"'  in  data:
-        #     data=data.encode('latin1',errors='ignore').decode('utf-8', errors='ignore')
-        #     data=json.loads(data)
-        # else:
-        #     data=json.loads(data)
-        # print(data)
-        #data=data.encode().decode('unicode_escape')
-        data=data.encode('latin1',errors='ignore').decode('utf-8', errors='ignore')
-        data=json.loads(data)
+        #print(data)  
+        if  'â'  in  data:
+            data=data.encode('latin1',errors='ignore').decode('utf-8', errors='ignore')
+            data=json.loads(data)
+        else:
+            data=json.loads(data)
+        #print(data)
+        # data=data.encode().decode('unicode_escape')
+        # data=data.encode('utf-8').decode('utf-8', errors='ignore')
+        # data=json.loads(data)
         #print(data)      
         title=data['520084652'][0]
         company_name=data['520084652'][1]
         loaction=data['520084652'][2]
         if data['520084652'][19]:
             job_des = data['520084652'][19]#.replace("â¢",".")
-            #print(type(job_des))
         apply_link=[]
         for i in range(len(data['520084652'][3])):
             link_name=data['520084652'][3][i][2]
@@ -78,7 +77,26 @@ def extract(datas):
         #print(title,company_name,loaction,job_des,apply_link,id,post)
         #print(apply_link)
         #ext_dict={'title':title,'company_name':company_name,'loaction':loaction,'job_des':job_des,'apply_link':apply_link,'Wmode':Wmode,'jid':jid,'Posted':post,'clogo':Clogo}
-        insert(title,company_name,loaction,job_des,str(apply_link),jid,post,Wmode,Clogo)
+        now=datetime.now()
+        if 'hours' in post:
+            print(post)
+            hours=int(post.split(" ")[0])
+            print(hours)
+            datepost=(now - timedelta(hours=hours)).strftime('%Y-%m-%d')
+            #print(now)
+        elif ('days' or 'day') in  post:
+            day=int(post.split(" ")[0])
+            datepost=(now - timedelta(days=day)).strftime('%Y-%m-%d')
+        
+            #print(now)
+        elif 'months' in  post:
+            Month=int(post.split(" ")[0])
+            day=Month*30
+            datepost=(now - timedelta(days=day)).strftime('%Y-%m-%d')
+        else:
+            datepost=''
+        print(type(datepost))
+        insert(title,company_name,loaction,job_des,str(apply_link),jid,post,Wmode,Clogo,datepost)
     
         #print(ext_dict)
         #exdta.append(ext_dict)
@@ -93,7 +111,7 @@ nextid=re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',soup)
 page=1
 while nextid:
     #print(datetime.datetime.now())
-    #time.sleep(20)
+    time.sleep(20)
     #print(datetime.datetime.now())
     nextid=nextid[0]
     next_url=f'https://www.google.com/async/callback:550?fc={nextid}&fcv=3&vet=12ahUKEwiZ69Wjn9mMAxWjd2wGHUQvHMAQw40IegQIJBAO..i&ei=X-b9Z9m_GaPvseMPxN7wgAw&opi=89978449&sca_esv=a5672ed9c1a134ac&udm=8&yv=3&cs=0&async=_basejs:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fam%3DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAAUBIAAAAAAAAAAgAAQAAAAAAACAAQAAAAAAAAkIAAFBAgAAAAAIAAAAAAAAEwCAgGAFAKAAAAAAAAAAAAAAEAAAAAAQEAHwvn8wAAAAAAAAAAAAAAAAAAAEQAIAAAAAAAAAuAAAEAAHABCyCxAAAAAAAAAAAAQAAAAAAAAIAAAAAABAAAAAAAUAAAAAAAAAABAAAAAAAAAACAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAACAAgAYAAAoAIIAfAAAAAAAABwAAAKAAAAAAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fdg%3D0%2Fbr%3D1%2Frs%3DACT90oEJRBK8Jld4KzC7cG12n5RtfwNYWw,_basecss:%2Fxjs%2F_%2Fss%2Fk%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGAMEAEABGYKAAAAgOAEAGQHAAAAAD4AADgVABAAAAAAAAFAAgAAAAAAAAgA0BMAEhAAABAFAAAAAAQIQhgAIAAAGwAAkAgAAEEAAIAgYAAAGQAAAAAgAABOBQDEAQAQAAAGAgCOgAAgAQAAABAKC4AAAACUIAAAAAAAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAACIAIBAAAAAIABACAGIAgAIAQIAAwAMAAvABAAAgASIAADTAAAQIAAoBAAGAHwAgAAAAIAEAABAAgCIAOMYoAAIAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAQ%2Fbr%3D1%2Frs%3DACT90oGkyCX8g6nBXeIixUwdgWWyVEDqhg,_basecomb:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fck%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGBMEAUBJGYKAAAAgOAkAGQHAAAAAD6AATgVABAAAAkIAAFBAgAAAAAIAAgA0BMAExCAgHAFAKAAAAQIQhgAIAAAGwAAkAgQEEHwvv8wYAAAGQAAAAAgAABOBQDEQQIQAAAGAgCOuAAgEQAHABC6C5AAAACUIAAAAAQAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAADIAIBAAAAAICBACAGIAgEIAQIAAwAMAAvABAAAgASIAADTAgAYIAAoBIIGfHwAgAAAAJwEAALAAgCIAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fd%3D1%2Fed%3D1%2Fdg%3D0%2Fbr%3D1%2Fujg%3D1%2Frs%3DACT90oGLK-4mHY6SD0g-PDy8Qw8STM-Kyw,_fmt:prog,_id:fc_X-b9Z9m_GaPvseMPxN7wgAw_2'
@@ -120,12 +138,12 @@ while nextid:
     #print(page_job)
     #print(nextid)
     page+=1
-    if page==3:
-    #if nextid=='':
+    #if page==3:
+    if nextid=='':
         print('all page extrac')
         break
         
-cursor.execute("select * from  job")
+cursor.execute("select * from  job1")
 nuumber_rows=cursor.fetchall()
 nuumber_rows=cursor.rowcount
 print(f'{nuumber_rows} Number jobs inserted ')

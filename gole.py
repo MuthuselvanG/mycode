@@ -8,14 +8,17 @@ import time
 from  datetime import datetime, timedelta
 import pymysql
 import html as parser1
+job_search='job in coimbatore'
 try:
-    db=pymysql.connect(host='localhost',user='root',password='Muthuplr99@',database='training')
-    #db=pymysql.connect(host='localhost',user='root',password='@ggreg@te',database='training') -office connections
+    
+    #db=pymysql.connect(host='localhost',user='root',password='Muthuplr99@',database='training')
+    db=pymysql.connect(host='localhost',user='root',password='@ggreg@te',database='Traning') #office connections
 
     cursor=db.cursor()
     print("db connected")
-
-    job_search="job in coimbatore"
+    cursor.execute("select * from job1 where job_search=%s",(job_search))
+    result=cursor.fetchall()
+    print(list(result))
     headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
     response = requests.get(
         'https://www.google.com/search?q='+job_search+'&oq='+job_search+'&gs_lcrp=EgZjaHJvbWUqDAgAEEUYOxixAxiABDIMCAAQRRg7GLEDGIAEMgcIARAAGIAEMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgcIBRAAGIAEMgcIBhAAGIAEMgcIBxAAGIAEMgcICBAAGIAEMgcICRAAGIAEqAIAsAIA&sourceid=chrome&ie=UTF-8&jbr=sep:0&udm=8&ved=2ahUKEwjdoLym2daMAxUUyDgGHfKrM3QQ3L8LegQIKBAO',
@@ -29,10 +32,11 @@ try:
     #soup=parser1.unescape(response.content.decode('utf-8'))
     soup=response.text#decode('utf-8')
     #open("gott.html","w").write(soup)
+    
 
-    def insert(title,company_name,loaction,job_des,apply_link,jid,post,Wmode,Clogo,datepost):
-        cursor.execute("insert into job (title,cname,location,job_desc,link,Workmode,job_id,posted,logo,postdate) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(title,company_name,loaction,job_des,apply_link,Wmode,jid,post,Clogo,datepost))
-        print('inserted')
+    def insert(title,company_name,loaction,job_des,apply_link,jid,post,Wmode,Clogo,datepost,job_search):
+        #cursor.execute("insert into job1 (title,cname,location,job_desc,link,Workmode,job_id,posted,logo,postdate,job_search) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(title,company_name,loaction,job_des,apply_link,Wmode,jid,post,Clogo,datepost,job_search))
+        #print('inserted')
         db.commit()
     #print(soup)
     all_job=[]
@@ -98,7 +102,7 @@ try:
             else:
                 datepost=None
             print(type(datepost))
-            insert(title,company_name,loaction,job_des,str(apply_link),jid,post,Wmode,Clogo,datepost)
+            insert(title,company_name,loaction,job_des,str(apply_link),jid,post,Wmode,Clogo,datepost,job_search)
         
             #print(ext_dict)
             #exdta.append(ext_dict)
@@ -110,40 +114,40 @@ try:
     nextid=re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',soup)
     #print(nextid)item
 
-    page=1
-    while nextid:
-        #print(datetime.datetime.now())
-        time.sleep(20)
-        #print(datetime.datetime.now())
-        nextid=nextid[0]
-        next_url=f'https://www.google.com/async/callback:550?fc={nextid}&fcv=3&vet=12ahUKEwiZ69Wjn9mMAxWjd2wGHUQvHMAQw40IegQIJBAO..i&ei=X-b9Z9m_GaPvseMPxN7wgAw&opi=89978449&sca_esv=a5672ed9c1a134ac&udm=8&yv=3&cs=0&async=_basejs:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fam%3DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAAUBIAAAAAAAAAAgAAQAAAAAAACAAQAAAAAAAAkIAAFBAgAAAAAIAAAAAAAAEwCAgGAFAKAAAAAAAAAAAAAAEAAAAAAQEAHwvn8wAAAAAAAAAAAAAAAAAAAEQAIAAAAAAAAAuAAAEAAHABCyCxAAAAAAAAAAAAQAAAAAAAAIAAAAAABAAAAAAAUAAAAAAAAAABAAAAAAAAAACAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAACAAgAYAAAoAIIAfAAAAAAAABwAAAKAAAAAAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fdg%3D0%2Fbr%3D1%2Frs%3DACT90oEJRBK8Jld4KzC7cG12n5RtfwNYWw,_basecss:%2Fxjs%2F_%2Fss%2Fk%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGAMEAEABGYKAAAAgOAEAGQHAAAAAD4AADgVABAAAAAAAAFAAgAAAAAAAAgA0BMAEhAAABAFAAAAAAQIQhgAIAAAGwAAkAgAAEEAAIAgYAAAGQAAAAAgAABOBQDEAQAQAAAGAgCOgAAgAQAAABAKC4AAAACUIAAAAAAAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAACIAIBAAAAAIABACAGIAgAIAQIAAwAMAAvABAAAgASIAADTAAAQIAAoBAAGAHwAgAAAAIAEAABAAgCIAOMYoAAIAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAQ%2Fbr%3D1%2Frs%3DACT90oGkyCX8g6nBXeIixUwdgWWyVEDqhg,_basecomb:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fck%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGBMEAUBJGYKAAAAgOAkAGQHAAAAAD6AATgVABAAAAkIAAFBAgAAAAAIAAgA0BMAExCAgHAFAKAAAAQIQhgAIAAAGwAAkAgQEEHwvv8wYAAAGQAAAAAgAABOBQDEQQIQAAAGAgCOuAAgEQAHABC6C5AAAACUIAAAAAQAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAADIAIBAAAAAICBACAGIAgEIAQIAAwAMAAvABAAAgASIAADTAgAYIAAoBIIGfHwAgAAAAJwEAALAAgCIAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fd%3D1%2Fed%3D1%2Fdg%3D0%2Fbr%3D1%2Fujg%3D1%2Frs%3DACT90oGLK-4mHY6SD0g-PDy8Qw8STM-Kyw,_fmt:prog,_id:fc_X-b9Z9m_GaPvseMPxN7wgAw_2'
-        response = requests.get(next_url,
-        #cookies=cookies,
-        headers=headers)
-        print(f'page{response.status_code}')
-        #res=response.content.decode('unicode_escape')
-        res=response.content.decode('unicode_escape')
-        #res=res.content
-        #res=response.content.decode('utf-8', errors='replace')
-        next_data=re.findall(r'\[\[\[\[\{.*?491935102.*?\[\[\[\[(.*?)]]]]]',res)
-        #print(next_data)
+    # page=1
+    # while nextid:
+    #     #print(datetime.datetime.now())
+    #     time.sleep(20)
+    #     #print(datetime.datetime.now())
+    #     nextid=nextid[0]
+    #     next_url=f'https://www.google.com/async/callback:550?fc={nextid}&fcv=3&vet=12ahUKEwiZ69Wjn9mMAxWjd2wGHUQvHMAQw40IegQIJBAO..i&ei=X-b9Z9m_GaPvseMPxN7wgAw&opi=89978449&sca_esv=a5672ed9c1a134ac&udm=8&yv=3&cs=0&async=_basejs:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fam%3DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAAUBIAAAAAAAAAAgAAQAAAAAAACAAQAAAAAAAAkIAAFBAgAAAAAIAAAAAAAAEwCAgGAFAKAAAAAAAAAAAAAAEAAAAAAQEAHwvn8wAAAAAAAAAAAAAAAAAAAEQAIAAAAAAAAAuAAAEAAHABCyCxAAAAAAAAAAAAQAAAAAAAAIAAAAAABAAAAAAAUAAAAAAAAAABAAAAAAAAAACAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAACAAgAYAAAoAIIAfAAAAAAAABwAAAKAAAAAAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fdg%3D0%2Fbr%3D1%2Frs%3DACT90oEJRBK8Jld4KzC7cG12n5RtfwNYWw,_basecss:%2Fxjs%2F_%2Fss%2Fk%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGAMEAEABGYKAAAAgOAEAGQHAAAAAD4AADgVABAAAAAAAAFAAgAAAAAAAAgA0BMAEhAAABAFAAAAAAQIQhgAIAAAGwAAkAgAAEEAAIAgYAAAGQAAAAAgAABOBQDEAQAQAAAGAgCOgAAgAQAAABAKC4AAAACUIAAAAAAAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAACIAIBAAAAAIABACAGIAgAIAQIAAwAMAAvABAAAgASIAADTAAAQIAAoBAAGAHwAgAAAAIAEAABAAgCIAOMYoAAIAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAQ%2Fbr%3D1%2Frs%3DACT90oGkyCX8g6nBXeIixUwdgWWyVEDqhg,_basecomb:%2Fxjs%2F_%2Fjs%2Fk%3Dxjs.s.en_GB.7dq7KLbWqlg.2018.O%2Fck%3Dxjs.s.JLbRv4firFU.L.B1.O%2Fam%3DAIQjEAIAAAABAAAgBIAKQAAAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAEAAAAAAAAAQAGBMEAUBJGYKAAAAgOAkAGQHAAAAAD6AATgVABAAAAkIAAFBAgAAAAAIAAgA0BMAExCAgHAFAKAAAAQIQhgAIAAAGwAAkAgQEEHwvv8wYAAAGQAAAAAgAABOBQDEQQIQAAAGAgCOuAAgEQAHABC6C5AAAACUIAAAAAQAAAUAAAAIAAAQAYBDMAyAQAWAATgCAAAAADIAIBAAAAAICBACAGIAgEIAQIAAwAMAAvABAAAgASIAADTAgAYIAAoBIIGfHwAgAAAAJwEAALAAgCIAOMYoAAIAAAAAAADyAPB4AIcUFAAAAAAAAAAAAAAAAASgIJgD6RcECAAAAAAAAAAAAAAAAAAAIEXQxLUGAAg%2Fd%3D1%2Fed%3D1%2Fdg%3D0%2Fbr%3D1%2Fujg%3D1%2Frs%3DACT90oGLK-4mHY6SD0g-PDy8Qw8STM-Kyw,_fmt:prog,_id:fc_X-b9Z9m_GaPvseMPxN7wgAw_2'
+    #     response = requests.get(next_url,
+    #     #cookies=cookies,
+    #     headers=headers)
+    #     print(f'page{response.status_code}')
+    #     #res=response.content.decode('unicode_escape')
+    #     res=response.content.decode('unicode_escape')
+    #     #res=res.content
+    #     #res=response.content.decode('utf-8', errors='replace')
+    #     next_data=re.findall(r'\[\[\[\[\{.*?491935102.*?\[\[\[\[(.*?)]]]]]',res)
+    #     #print(next_data)
         
-        #next_data=ast.literal_eval(next_data)
-        #next_data=next_data.encode('latin1',errors='ignore')
-        page_job=extract(next_data)
-        #jobs.extend(page_job)
-        if re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',res):
-            nextid=re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',res)
-            pass
-        else:
-            nextid=''
-        #print(page_job)
-        #print(nextid)
-        page+=1
-        #if page==3:
-        if nextid=='':
-            print('all page extrac')
-            break
+    #     #next_data=ast.literal_eval(next_data)
+    #     #next_data=next_data.encode('latin1',errors='ignore')
+    #     page_job=extract(next_data)
+    #     #jobs.extend(page_job)
+    #     if re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',res):
+    #         nextid=re.findall(r'jsname="Yust4d".*?data-async-fc="(.*?)" data-a',res)
+    #         pass
+    #     else:
+    #         nextid=''
+    #     #print(page_job)
+    #     #print(nextid)
+    #     page+=1
+    #     #if page==3:
+    #     if nextid=='':
+    #         print('all page extrac')
+    #         break
             
     cursor.execute("select * from  job")
     nuumber_rows=cursor.fetchall()

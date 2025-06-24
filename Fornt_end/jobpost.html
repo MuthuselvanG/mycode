@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post a Job</title>
+  <link rel="stylesheet" href="style1.css">
+  <style>
+    .hello{
+        margin: 75px;
+    }
+       form {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #004aad;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="https://images.scalebranding.com/bbc2ea6c-5408-4d3d-8265-93a53a4c2b15.png" alt="Logo">
+                <h1>JobFinder</h1>
+            </div>
+            <ul class="nav_menu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="jobpost.html">Post Job</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+ <center>
+     <form id="jobForm" class="hello">
+    <h2>Post a New Job</h2>
+    <input type="text" id="title" placeholder="Job Title" required>
+    <input type="text" id="company" placeholder="Company Name" required>
+    <input type="text" id="location" placeholder="Location" required>
+    <textarea id="desc" placeholder="Job Description" rows="5" required></textarea>
+    <button type="submit">Post Job</button>
+  </form>
+ </center>
+
+  <script>
+    document.getElementById("jobForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const job = {
+        title: document.getElementById("title").value,
+        company: document.getElementById("company").value,
+        location: document.getElementById("location").value,
+        desc: document.getElementById("desc").value
+      };
+
+      const jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+      jobs.unshift(job);
+      localStorage.setItem("jobs", JSON.stringify(jobs));
+
+      alert("Job posted successfully!");
+      window.location.href = "sampl.html";
+    });
+  </script>
+ <footer>
+        <p>Created by <a href="https://www.linkedin.com/in/muthuselvan-g/" target="_blank">Muthuselvan G</a></p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Portal</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="https://images.scalebranding.com/bbc2ea6c-5408-4d3d-8265-93a53a4c2b15.png" alt="Logo">
+                <h1>JobFinder</h1>
+            </div>
+            <ul class="nav_menu">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="jobpost.html">Post Job</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+   
+   <!-- Search Section -->
+   <section class="search-section">
+     <div class="logo-scroller">
+  <div class="logos">
+    <img src="https://1000logos.net/wp-content/uploads/2016/10/Apple-Logo.png" alt="Apple">
+    <img src="https://1000logos.net/wp-content/uploads/2017/06/samsung-tumb.jpg" alt="Samsung">
+    <img src="https://1000logos.net/wp-content/uploads/2019/06/Microsoft-Logo.jpg" alt="Microsoft">
+    <img src="https://1000logos.net/wp-content/uploads/2021/11/Nike-Logo-tumb-140x88.jpg" alt="Tesla">
+    <img src="https://1000logos.net/wp-content/uploads/2016/10/Amazon-Logo-tumb.png" alt="Amazon">
+    <img src="https://1000logos.net/wp-content/uploads/2019/06/Google-Logo.jpg" alt="Google">
+    <img src="https://1000logos.net/wp-content/themes/redwaves-lite/pic/facebook-logo-small.png" alt="Facebook">
+    <img src="https://1000logos.net/wp-content/uploads/2021/09/Cognizant-Logo-tumb-1.png" alt="Adobe">
+    <img src="https://1000logos.net/wp-content/uploads/2021/05/Intel-logo.png" alt="Intel">
+    <img src="https://www.sealpath.com/wp-content/uploads/2022/10/wipro_primary-logo_color_rgb.png" alt="wipro">
+  </div>
+</div>
+  <h2>Find Your Dream Job</h2>
+  <div class="search-bar">
+    <input type="text" id="searchTitle" placeholder="Job Title">
+    <input type="text" id="searchLocation" placeholder="Location">
+    <button onclick="filterJobs()">Search</button>
+  </div>
+</section>
+
+    <!-- Job Cards -->
+    <!-- Job Cards -->
+<section class="job-listings" id="jobList"></section>
+
+<script>
+  let allJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+  const jobList = document.getElementById("jobList");
+
+  function displayJobs(jobs) {
+    jobList.innerHTML = ""; // Clear previous
+    jobs.forEach(job => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3>${job.title}</h3>
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p>${job.description}</p>
+      `;
+      jobList.appendChild(card);
+    });
+  }
+
+  function filterJobs() {
+    const titleQuery = document.getElementById("searchTitle").value.toLowerCase();
+    const locationQuery = document.getElementById("searchLocation").value.toLowerCase();
+
+    const filtered = allJobs.filter(job =>
+      job.title.toLowerCase().includes(titleQuery) &&
+      job.location.toLowerCase().includes(locationQuery)
+    );
+
+    displayJobs(filtered);
+  }
+
+  // Load all jobs initially
+  displayJobs(allJobs);
+</script>
+
+
+    <!-- Footer -->
+    <footer class="foot">
+        <p>Created by <a href="https://www.linkedin.com/in/muthuselvan-g/" target="_blank">Muthuselvan G</a></p>
+    </footer>
+
+</body>
+</html>

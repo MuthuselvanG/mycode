@@ -11,8 +11,8 @@ import html as parser1
 job_search='job in coimbatore'
 try:
     
-    #db=pymysql.connect(host='localhost',user='root',password='Muthuplr99@',database='training')
-    db=pymysql.connect(host='localhost',user='root',password='@ggreg@te',database='Traning') #office connections
+    db=pymysql.connect(host='localhost',user='root',password='Muthuplr99@',database='training')
+    #db=pymysql.connect(host='localhost',user='root',password='@ggreg@te',database='Traning') #office connections
 
     cursor=db.cursor()
     print("db connected")

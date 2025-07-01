@@ -43,6 +43,8 @@ for page in range(1,int(count)+1):
     print(len(results))
     for i in range(1,len(results)):
         time.sleep(10)
+
+        
         print(i)
         Jid=soup['results']['jobs'][i]['id']
         Jurl=soup['results']['jobs'][i]['public_url']

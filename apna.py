@@ -6,7 +6,7 @@ from datetime import datetime,time
 import  time
 
 headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
-
+#tttttttttttttttt
 params = {
     'search': 'true',
     'text': 'Data Analyst',
@@ -44,7 +44,7 @@ for page in range(1,int(count)+1):
     for i in range(1,len(results)):
         time.sleep(10)
 
-        
+
         print(i)
         Jid=soup['results']['jobs'][i]['id']
         Jurl=soup['results']['jobs'][i]['public_url']

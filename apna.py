@@ -10,13 +10,17 @@ import pandas as pd
 headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
 #tttttttttttttttt
 params = {
+    'location_id': '1',
+    'location_identifier': '1',
+    'location_type': 'State',
+    'location_name': 'Tamil Nadu',
     'search': 'true',
     'text': 'Data Analyst',
-    'entity_id': '10039789',
+    'entity_id': '226',
     'entity_type': 'JobTitle',
     'raw_text_correction': 'true',
-    #'session_id': '4985ffdd-d4f4-44f8-9df8-1f11608a326c',
-    'page': '1',
+    #'session_id': 'f60c3e33-6d0a-4521-aa2c-b0a08925375e',
+    'page': '2',
     'page_size': '14',
 }
 
@@ -84,10 +88,10 @@ for page in range(1,2):
                 JD=re.findall(r'<div class="styles__DescriptionTextFull-sc-1532ppx-9 bHTOGx"><div>(.*?)</div>',res)
             else:
                 JD=""
-            # if re.findall(r'<div class="flex-1"><p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Work location</p>.*?\[24px]">(.*?)</p></div>',res):
-            #     location=re.findall(r'<div class="flex-1"><p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Work location</p>.*?\[24px]">(.*?)</p></div>',res)
-            # else:
-            #     location=""
+            if re.findall(r'<div class="flex-1"><p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Work location</p>.*?\[24px]">(.*?)</p></div>',res):
+                Clocation=re.findall(r'<div class="flex-1"><p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Work location</p>.*?\[24px]">(.*?)</p></div>',res)
+            else:
+                Clocation=""
             if re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Department</p>.*?\[24px]">(.*?)</p></div>',res):
                 Deparment=re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Department</p>.*?\[24px]">(.*?)</p></div>',res)
             else:
@@ -102,9 +106,13 @@ for page in range(1,2):
                 shift=''
             # Jd=re.sub(r'<.*?>','',JD)
 
-            data={'JobTite':JobTite[0],'CName':CName[0],'location':location[0],'salry':salry[0],'Workmode':Workmode[0],
-                  'worktype':worktype[0],'JD':JD,'Deparment':Deparment[0],'Category':Category[0],'shift':shift[0],"PageNumber":page,'Jurl':Jurl,
+            # data={'JobTite':JobTite[0],'CName':CName[0],'location':location[0],'salry':salry[0],'Workmode':Workmode[0],
+            #       'worktype':worktype[0],'JD':JD[0],'Deparment':Deparment[0],'Category':Category[0],'shift':shift[0],"PageNumber":page,'Jurl':Jurl,
+            #       'Jid':Jid}
+            data={'JobTite':JobTite,'CName':CName,'Clocation':Clocation,'location':location,'salry':salry,'Workmode':Workmode,
+                  'worktype':worktype,'JD':JD,'Deparment':Deparment,'Category':Category,'shift':shift,"PageNumber":page,'Jurl':Jurl,
                   'Jid':Jid}
+            
             total_Result.append(data)
 df=pd.DataFrame(total_Result)
 df.to_excel("job.xlsx")

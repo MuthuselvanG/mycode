@@ -4,6 +4,8 @@ import html as parser1
 import json
 from datetime import datetime,time
 import  time
+import pandas as pd
+
 
 headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
 #tttttttttttttttt
@@ -22,9 +24,10 @@ response = requests.get('https://production.apna.co/user-profile-orchestrator/pu
 
 #print(response.text)
 soup=json.loads(response.text)
+total_Result=[]
 count=soup['count']/14
-for page in range(1,int(count)+1):
-    time.sleep(20)
+for page in range(1,2):
+    print(page ,'-',response.status_code )
     params = {
         'search': 'true',
         'text': 'Data Analyst',
@@ -41,17 +44,16 @@ for page in range(1,int(count)+1):
     print(response.status_code,page)
     results=soup['results']['jobs']
     print(len(results))
+    time.sleep(10)
     for i in range(1,len(results)):
-        time.sleep(10)
-
-
         print(i)
         Jid=soup['results']['jobs'][i]['id']
         Jurl=soup['results']['jobs'][i]['public_url']
         print(Jid,Jurl)
 
         resp=requests.get(Jurl, headers=headers,timeout=10)
-        print(resp.status_code)
+        time.sleep(5)
+        #print(resp.status_code)
         res=resp.text
         if re.findall(r'class="m-0 truncate text-wrap text-md font-semibold text-\[\#190A28\]">(.*?)</p>',res):
             if re.findall(r'class="m-0 truncate text-wrap text-md font-semibold text-\[\#190A28\]">(.*?)</p>',res):
@@ -73,13 +75,13 @@ for page in range(1,int(count)+1):
             if re.findall(r'<div class="flex items-center gap-\[4px]">.*?-\[#8C8594]">(.*?)</p>',res):
                 Workmode=re.findall(r'<div class="flex items-center gap-\[4px]">.*?-\[#8C8594]">(.*?)</p>',res)
             else:
-                Workmode=""
+                Workmode=''
             if re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Employment type</p>.*?\[24px]">(.*?)</p></div>',res):
                 worktype=re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Employment type</p>.*?\[24px]">(.*?)</p></div>',res)
             else:
                 worktype=""
-            if re.findall(r'<div class="styles__DescriptionTextFull-sc-1532ppx-9 bHTOGx"><div><p><p>(.*?)</div>',res):
-                JD=re.findall(r'<div class="styles__DescriptionTextFull-sc-1532ppx-9 bHTOGx"><div><p><p>(.*?)</div>',res)
+            if re.findall(r'<div class="styles__DescriptionTextFull-sc-1532ppx-9 bHTOGx"><div>(.*?)</div>',res):
+                JD=re.findall(r'<div class="styles__DescriptionTextFull-sc-1532ppx-9 bHTOGx"><div>(.*?)</div>',res)
             else:
                 JD=""
             # if re.findall(r'<div class="flex-1"><p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Work location</p>.*?\[24px]">(.*?)</p></div>',res):
@@ -96,6 +98,13 @@ for page in range(1,int(count)+1):
                 Category=""
             if re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Shift</p>.*?\[24px]">(.*?)</p></div>',res):
                 shift=re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Shift</p>.*?\[24px]">(.*?)</p></div>',res)
+            else:
+                shift=''
             # Jd=re.sub(r'<.*?>','',JD)
 
-            print(JobTite,location)
+            data={'JobTite':JobTite[0],'CName':CName[0],'location':location[0],'salry':salry[0],'Workmode':Workmode[0],
+                  'worktype':worktype[0],'JD':JD,'Deparment':Deparment[0],'Category':Category[0],'shift':shift[0],"PageNumber":page,'Jurl':Jurl,
+                  'Jid':Jid}
+            total_Result.append(data)
+df=pd.DataFrame(total_Result)
+df.to_excel("job.xlsx")

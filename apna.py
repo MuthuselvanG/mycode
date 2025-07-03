@@ -5,7 +5,17 @@ import json
 from datetime import datetime,time
 import  time
 import pandas as pd
+import pymysql
 
+
+db=pymysql.connect(host='localhost',user='root',password='@ggreg@te',database='Traning')
+table = 'apnajob'
+print('db connected')
+cursor=db.cursor()
+def insert(Jid,JobTite,CName,Clocation,location,salry,Workmode,worktype,JD,Deparment,Category,shift,page,Jurl):
+    cursor.execute('insert into '+table+'(jobid,jobtile,cname,cloaction,location,salary,workmode,worktype,jobdes,deparment,Category,shift,Pagenum,joburl)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',(Jid,JobTite,CName,Clocation,location,salry,Workmode,worktype,JD,Deparment,Category,shift,page,Jurl))
+    db.commit()
+    print('inserted')
 
 headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
 #tttttttttttttttt
@@ -92,6 +102,7 @@ for page in range(1,2):
                 Clocation=re.findall(r'<div class="flex-1"><p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Work location</p>.*?\[24px]">(.*?)</p></div>',res)
             else:
                 Clocation=""
+            print(Clocation)
             if re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Department</p>.*?\[24px]">(.*?)</p></div>',res):
                 Deparment=re.findall(r'<p class="m-0 text-sm leading-\[20px] text-\[#8C8594] md:leading-\[24px]">Department</p>.*?\[24px]">(.*?)</p></div>',res)
             else:
@@ -109,10 +120,11 @@ for page in range(1,2):
             # data={'JobTite':JobTite[0],'CName':CName[0],'location':location[0],'salry':salry[0],'Workmode':Workmode[0],
             #       'worktype':worktype[0],'JD':JD[0],'Deparment':Deparment[0],'Category':Category[0],'shift':shift[0],"PageNumber":page,'Jurl':Jurl,
             #       'Jid':Jid}
-            data={'JobTite':JobTite,'CName':CName,'Clocation':Clocation,'location':location,'salry':salry,'Workmode':Workmode,
-                  'worktype':worktype,'JD':JD,'Deparment':Deparment,'Category':Category,'shift':shift,"PageNumber":page,'Jurl':Jurl,
-                  'Jid':Jid}
+            # data={'JobTite':JobTite,'CName':CName,'Clocation':Clocation,'location':location,'salry':salry,'Workmode':Workmode,
+            #       'worktype':worktype,'JD':JD,'Deparment':Deparment,'Category':Category,'shift':shift,"PageNumber":page,'Jurl':Jurl,
+            #       'Jid':Jid}
             
-            total_Result.append(data)
-df=pd.DataFrame(total_Result)
-df.to_excel("job.xlsx")
+            #total_Result.append(data)
+# df=pd.DataFrame(total_Result)
+# df.to_excel("job.xlsx")
+            insert(Jid,JobTite,CName,Clocation,location,salry,Workmode,worktype,JD,Deparment,Category,shift,page,Jurl)

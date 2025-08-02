@@ -14,16 +14,19 @@ print('db connected')
 cursor=db.cursor()
 cursor.execute(f'select jobid from {table} order by jobid')
 tdata=cursor.fetchall()
+tdata=list(d[0]for d in tdata)
 print(tdata)
 
-def insert(jid,JobTite,Cname,Clocation,pdate,expiry,salary,experice,description,Workmode,worktype,category,deparment,shift,Refurl,appliedurl,page):
+def insert(jdata):#(jid,JobTite,Cname,Clocation,pdate,expiry,salary,experice,description,Workmode,worktype,category,deparment,shift,Refurl,appliedurl,page):
+        
+
         try:
             cursor.execute('insert into '+table+'(jobid,jobtitle,Postdate,expireddate,cname,cloaction,salary,experience,workmode,worktype,description,deparment,Category,shift,appliedurl,Pagenum,joburl)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
-                                                (jid,JobTite,pdate,expiry,Cname,Clocation,salary,experice,Workmode,worktype,description,deparment,category,shift,appliedurl,page,Refurl))
+                                                (jdata))#(jid,JobTite,pdate,expiry,Cname,Clocation,salary,experice,Workmode,worktype,description,deparment,category,shift,appliedurl,page,Refurl))
             db.commit()
-            print(f'{jid} - inserted')
-        except:
-            print(f'{jid} - Not inserted')
+            print(f'{jdata[0]} - inserted')
+        except Exception as e:
+            print(e)
 
 headers = {'Upgrade-Insecure-Requests': '1','User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',}
 
@@ -33,7 +36,7 @@ params = {
     'location_type': 'State',
     'location_name': 'Tamil Nadu',
     'search': 'true',
-    'text': 'Data Entry',
+    'text': 'Data analyst',
     'entity_id': '226',
     'entity_type': 'JobTitle',
     'raw_text_correction': 'true',
@@ -49,7 +52,7 @@ soup=json.loads(response.text)
 count=int(soup['count']/14)
 print(count)
 jids=[]
-for page in range(1,count):
+for page in range(1,3):
     print(page ,'-',response.status_code )
     params = {
         'search': 'true',
@@ -68,7 +71,6 @@ for page in range(1,count):
     results=soup['results']['jobs']
     print(len(results))
     time.sleep(10)
-    j=[]
     for i in range(1,14):
         print(i)
         #Jid=soup['results']['jobs'][i]['id']
@@ -137,7 +139,16 @@ for page in range(1,count):
             appliedurl=''
         print(shift,deparment)
         #print(jid,JobTite,pdate,expiry,salary,experice,description,Workmode,worktype,shift,category,deparment,Cname,Clocation,Refurl)
-        insert(jid,JobTite,Cname,Clocation,pdate,expiry,salary,experice,description,Workmode,worktype,category,shift,deparment,Refurl,appliedurl,page)
+        #data=[jid,JobTite,Cname,Clocation,pdate,expiry,salary,experice,description,Workmode,worktype,category,shift,deparment,Refurl,appliedurl,page]
+        data=[jid,JobTite,pdate,expiry,Cname,Clocation,salary,experice,Workmode,worktype,description,deparment,category,shift,appliedurl,page,Refurl]
+        jids.append(data)
+    #insert(jid,JobTite,Cname,Clocation,pdate,expiry,salary,experice,description,Workmode,worktype,category,shift,deparment,Refurl,appliedurl,page)
+for jdata in jids:
+    if jdata[0] not in tdata:
+        insert(jdata)
+        #print(jdata)
+    else:
+        print(f'{jdata[0]} - already insert')
         # if re.findall(r'class="m-0 truncate text-wrap text-md font-semibold text-\[\#190A28\]">(.*?)</p>',res):
             # if re.findall(r'class="m-0 truncate text-wrap text-md font-semibold text-\[\#190A28\]">(.*?)</p>',res):
             #     JobTite=re.findall(r'class="m-0 truncate text-wrap text-md font-semibold text-\[\#190A28\]">(.*?)</p>',res)

@@ -49,10 +49,14 @@ response = requests.get('https://production.apna.co/user-profile-orchestrator/pu
 
 #print(response.text)
 soup=json.loads(response.text)
-count=int(soup['count']/14)
-print(count)
+if len(tdata)==0:
+    count=int(soup['count']/14)
+    print(count)
+else:
+    count=4
+    print(count)
 jids=[]
-for page in range(1,3):
+for page in range(1,count):
     print(page ,'-',response.status_code )
     params = {
         'search': 'true',

@@ -90,7 +90,7 @@ for input in results:
     slug=input[3]
     location=input[4]
     #time.sleep(10)
-    response = requests.get('https://www.olympics.com/en/olympic-games/paris-2024/medals', headers=headers)
+    response = requests.get(url, headers=headers)
     print(url)
     response=response.text
     if re.findall(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>',response):
